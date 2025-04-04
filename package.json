@@ -1,0 +1,27 @@
+{
+  "name": "nih-reporter",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/lib/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --loader ts-node/esm --no-warnings=ExperimentalWarning test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adiSuper94/nih-reporter.git"
+  },
+  "keywords": [],
+  "author": "Aditya Subramanian",
+  "bugs": {
+    "url": "https://github.com/adiSuper94/nih-reporter/issues"
+  },
+  "homepage": "https://github.com/adiSuper94/nih-reporter#readme",
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
