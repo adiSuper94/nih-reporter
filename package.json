@@ -1,10 +1,10 @@
 {
-  "name": "nih-reporter",
+  "name": "@adisuper94/nih-reporter",
   "version": "1.0.0",
   "description": "",
   "type": "module",
   "main": "dist/lib/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "node --loader ts-node/esm --no-warnings=ExperimentalWarning test/*"

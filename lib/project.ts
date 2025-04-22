@@ -98,7 +98,8 @@ class NIHProjectQuery {
     const data = await resp.json();
     const results = data.results;
     if (typeof results != "object") {
-      return [[], new Error("Invalid response")];
+      const errMsg = data[0];
+      return [[], new Error(`NIH API err_msg: ${errMsg}`)];
     }
     const projects: NIHProject[] = results.map((raw: any) => parseNIHProject(raw));
     return [projects, null];
@@ -106,21 +107,25 @@ class NIHProjectQuery {
 
   iterator() {
     let done = false;
+    let buffer: NIHProject[] = [];
+    let idx = 0;
     const iterator = {
-      next: async (): Promise<[NIHProject[], Error | null]> => {
+      next: async (): Promise<[NIHProject?, Error?]> => {
         if (done) {
-          return [[], null];
+          return [undefined, undefined];
         }
-        const [projects, err] = await this.execute();
-        if (err) {
-          return [[], err];
+        if (idx >= buffer.length) {
+          const [projects, err] = await this.execute();
+          this.offset += this.limit;
+          this.setOffset(this.offset);
+          if (err) {
+            done = true;
+            return [undefined, err];
+          }
+          buffer = projects;
+          idx = 0;
         }
-        if (projects.length < this.limit) {
-          done = true;
-        }
-        this.offset += this.limit;
-        this.setOffset(this.offset);
-        return [projects, null];
+        return [buffer[idx], undefined];
       },
     };
     return iterator;
