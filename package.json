@@ -1,6 +1,6 @@
 {
   "name": "@adisuper94/nih-reporter",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "type": "module",
   "main": "dist/lib/index.js",

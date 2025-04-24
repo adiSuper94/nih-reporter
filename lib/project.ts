@@ -19,21 +19,35 @@ class NIHProjectQuery {
     this.limit = 50;
   }
 
+  /**
+   * When executed, this will return projects associated with "ANY" of the PI profile IDs passed
+   */
   setPIProfileIds(piProfileIds: number[]): NIHProjectQuery {
     this.piProfileIds = piProfileIds;
     return this;
   }
 
+  /**
+   * When executed, this will return projects that started in "ANY" of the fiscal years entered
+   */
   setFiscalYears(fiscalYears: number[]): NIHProjectQuery {
     this.fiscalYears = fiscalYears;
     return this;
   }
 
+  /**
+   * If sets true, it will bring the most closely matching records with the search criteria on top
+   * Default is false
+   */
   setUseRelevance(useRelevance: boolean): NIHProjectQuery {
     this.useRelavance = useRelevance;
     return this;
   }
 
+  /**
+   * Return the result with active projects if set to true
+   * Default is false
+   */
   setIncludeActiveProjects(includeActiveProjects: boolean): NIHProjectQuery {
     this.includeActiveProjects = includeActiveProjects;
     return this;
@@ -105,13 +119,19 @@ class NIHProjectQuery {
     return projects;
   }
 
-  async *iterator() {
+  /**
+   * @param offset to start from, by default it is 0
+   * @returns an async iterator that will yield NIHProject objects
+   * @throws Error if the NIH Reporter API call fails
+   */
+  async *iterator(offset = 0): AsyncGenerator<NIHProject, void, void> {
     let buffer: NIHProject[] = [];
     let idx = 0;
     while (true) {
       if (idx >= buffer.length) {
+        this.setOffset(offset);
         const projects = await this.execute();
-        this.setOffset(this.offset + this.limit);
+        offset += this.limit;
         buffer = projects;
         idx = 0;
       }
@@ -122,14 +142,19 @@ class NIHProjectQuery {
     }
   }
 
-  async *safeIterator(): AsyncGenerator<[NIHProject | undefined, Error | undefined]> {
+  /**
+   * @param offset to start from, by default it is 0
+   * @returns a safe async iterator that will yield NIHProject objects in Golang style (value, error) tuple
+   */
+  async *safeIterator(offset = 0): AsyncGenerator<[NIHProject?, Error?], [undefined, undefined], void> {
     let buffer: NIHProject[] = [];
     let idx = 0;
     try {
       while (true) {
         if (idx >= buffer.length) {
+          this.setOffset(offset);
           const projects = await this.execute();
-          this.setOffset(this.offset + this.limit);
+          offset += this.limit;
           buffer = projects;
           idx = 0;
         }
@@ -145,6 +170,7 @@ class NIHProjectQuery {
         yield [undefined, new Error(String(err))];
       }
     }
+    return [undefined, undefined];
   }
 }
 export { NIHProjectQuery, NIHProject };
