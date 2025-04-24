@@ -121,5 +121,30 @@ class NIHProjectQuery {
       yield buffer[idx++];
     }
   }
+
+  async *safeIterator(): AsyncGenerator<[NIHProject | undefined, Error | undefined]> {
+    let buffer: NIHProject[] = [];
+    let idx = 0;
+    try {
+      while (true) {
+        if (idx >= buffer.length) {
+          const projects = await this.execute();
+          this.setOffset(this.offset + this.limit);
+          buffer = projects;
+          idx = 0;
+        }
+        if (idx >= buffer.length) {
+          return [undefined, undefined];
+        }
+        yield [buffer[idx++], undefined];
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        yield [undefined, err];
+      } else {
+        yield [undefined, new Error(String(err))];
+      }
+    }
+  }
 }
 export { NIHProjectQuery, NIHProject };
