@@ -1,13 +1,13 @@
 {
   "name": "@adisuper94/nih-reporter",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "type": "module",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "node --loader ts-node/esm --no-warnings=ExperimentalWarning test/*"
+    "test": "node --loader ts-node/esm --no-warnings=ExperimentalWarning tests/*"
   },
   "repository": {
     "type": "git",

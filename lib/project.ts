@@ -76,7 +76,7 @@ class NIHProjectQuery {
     return this;
   }
 
-  async execute(): Promise<[NIHProject[], Error | null]> {
+  async execute(): Promise<NIHProject[]> {
     const resp = await fetch("https://api.reporter.nih.gov/v2/projects/search", {
       method: "POST",
       headers: {
@@ -99,36 +99,27 @@ class NIHProjectQuery {
     const results = data.results;
     if (typeof results != "object") {
       const errMsg = data[0];
-      return [[], new Error(`NIH API err_msg: ${errMsg}`)];
+      throw new Error(`NIH API err_msg: ${errMsg}`);
     }
     const projects: NIHProject[] = results.map((raw: any) => parseNIHProject(raw));
-    return [projects, null];
+    return projects;
   }
 
-  iterator() {
-    let done = false;
+  async *iterator() {
     let buffer: NIHProject[] = [];
     let idx = 0;
-    const iterator = {
-      next: async (): Promise<[NIHProject?, Error?]> => {
-        if (done) {
-          return [undefined, undefined];
-        }
-        if (idx >= buffer.length) {
-          const [projects, err] = await this.execute();
-          this.offset += this.limit;
-          this.setOffset(this.offset);
-          if (err) {
-            done = true;
-            return [undefined, err];
-          }
-          buffer = projects;
-          idx = 0;
-        }
-        return [buffer[idx], undefined];
-      },
-    };
-    return iterator;
+    while (true) {
+      if (idx >= buffer.length) {
+        const projects = await this.execute();
+        this.setOffset(this.offset + this.limit);
+        buffer = projects;
+        idx = 0;
+      }
+      if (idx >= buffer.length) {
+        return;
+      }
+      yield buffer[idx++];
+    }
   }
 }
 export { NIHProjectQuery, NIHProject };
