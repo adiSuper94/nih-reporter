@@ -129,6 +129,9 @@ class NIHProjectQuery {
     let idx = 0;
     while (true) {
       if (idx >= buffer.length) {
+        if (buffer.length != 0 && buffer.length < this.limit) {
+          return;
+        }
         this.setOffset(offset);
         const projects = await this.execute();
         offset += this.limit;
@@ -152,6 +155,9 @@ class NIHProjectQuery {
     try {
       while (true) {
         if (idx >= buffer.length) {
+          if (buffer.length != 0 && buffer.length < this.limit) {
+            return [undefined, undefined];
+          }
           this.setOffset(offset);
           const projects = await this.execute();
           offset += this.limit;

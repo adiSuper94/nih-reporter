@@ -40,4 +40,26 @@ describe("Project: Pinaki 2020", async () => {
     [result, _err] = value;
     assert.equal(result?.applId, 10228110);
   });
+
+  test("Totally consumed iterator", async () => {
+    let iter = query.iterator();
+    for (let i = 0; i < projects.length; i++) {
+      await iter.next();
+    }
+    let { value, done } = await iter.next();
+    assert.equal(done, true);
+    assert.equal(value, undefined);
+  });
+
+  test("Totally consumed safe iterator", async () => {
+    let iterSafe = query.safeIterator();
+    for (let i = 0; i < projects.length; i++) {
+      await iterSafe.next();
+    }
+    let { value, done } = await iterSafe.next();
+    assert.equal(done, true);
+    let [result, err] = value;
+    assert.equal(result, undefined);
+    assert.equal(err, undefined);
+  });
 });
