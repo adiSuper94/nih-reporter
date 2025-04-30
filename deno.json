@@ -1,0 +1,18 @@
+{
+  "name": "@adisuper94/nih-reporter",
+  "version": "0.1.0",
+  "exports": "./mod.ts",
+  "tasks": {
+    "dev": "deno test --allow-net --watch",
+    "npm": "deno test --allow-net && deno run -A ./scripts/build_npm.ts"
+  },
+  "fmt": {
+    "lineWidth": 120
+  },
+  "license": "MIT",
+  "imports": {
+    "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
+    "@std/assert": "jsr:@std/assert@1",
+    "@zod/mini": "npm:@zod/mini@^4.0.0-beta.20250430T185432"
+  }
+}

@@ -1,3 +1,3 @@
-import { NIHProjectQuery } from "./project.js";
-import { NIHProject } from "./types.js";
-export { NIHProjectQuery, NIHProject };
+import { NIHProjectQuery } from "./project.ts";
+import type { NIHProject } from "./types.ts";
+export { type NIHProject, NIHProjectQuery };

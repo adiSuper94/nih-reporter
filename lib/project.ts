@@ -1,4 +1,4 @@
-import { NIHProject, NIHProjectFields, parseNIHProject } from "./types.js";
+import { type NIHProject, type NIHProjectFields, parseNIHProject } from "./types.ts";
 
 class NIHProjectQuery {
   private useRelavance: boolean;
@@ -115,7 +115,13 @@ class NIHProjectQuery {
       const errMsg = data[0];
       throw new Error(`NIH API err_msg: ${errMsg}`);
     }
-    const projects: NIHProject[] = results.map((raw: any) => parseNIHProject(raw));
+    const projects: NIHProject[] = results.map((p: unknown) => {
+      const [project, err] = parseNIHProject(p);
+      if (err) {
+        throw new Error(`NIH API parse err_msg: ${JSON.stringify(err, null, 1)}`);
+      }
+      return project;
+    });
     return projects;
   }
 
@@ -179,4 +185,4 @@ class NIHProjectQuery {
     return [undefined, undefined];
   }
 }
-export { NIHProjectQuery, NIHProject };
+export { type NIHProject, NIHProjectQuery };
