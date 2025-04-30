@@ -1,7 +1,7 @@
 {
   "name": "@adisuper94/nih-reporter",
   "version": "0.0.4",
-  "description": "",
+  "description": "NIH Reporter API client",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
     "type": "git",
     "url": "git+https://github.com/adiSuper94/nih-reporter.git"
   },
-  "keywords": [],
+  "keywords": ["nih", "nih-reporter", "api"],
   "author": "Aditya Subramanian",
   "bugs": {
     "url": "https://github.com/adiSuper94/nih-reporter/issues"
