@@ -151,6 +151,9 @@ const NIHProjectSchema = z.pipe(
   }),
 );
 
+/**
+ * NIH Project/Award object
+ */
 interface NIHProject extends z.infer<typeof NIHProjectSchema> {}
 
 type NIHProjectFields =

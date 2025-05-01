@@ -1,5 +1,9 @@
 import { type NIHProject, type NIHProjectFields, parseNIHProject } from "./types.ts";
 
+/**
+ * NIHProjectQuery class to query the NIH Reporter API for projects
+ * All methods follow the builder pattern (are chainable) and return the same instance of the class
+ */
 class NIHProjectQuery {
   private useRelavance: boolean;
   private fiscalYears: number[];
@@ -20,7 +24,8 @@ class NIHProjectQuery {
   }
 
   /**
-   * When executed, this will return projects associated with "ANY" of the PI profile IDs passed
+   * Set query params to return projects associated with "ANY" of the PI profile IDs passed
+   * @param piProfileIds - The PI profile IDs to filter the projects by
    */
   setPIProfileIds(piProfileIds: number[]): NIHProjectQuery {
     this.piProfileIds = piProfileIds;
@@ -28,7 +33,8 @@ class NIHProjectQuery {
   }
 
   /**
-   * When executed, this will return projects that started in "ANY" of the fiscal years entered
+   * Sets query params return projects that started in "ANY" of the fiscal years entered
+   * @param fiscalYears - The fiscal years to filter the projects by
    */
   setFiscalYears(fiscalYears: number[]): NIHProjectQuery {
     this.fiscalYears = fiscalYears;
@@ -37,7 +43,7 @@ class NIHProjectQuery {
 
   /**
    * If sets true, it will bring the most closely matching records with the search criteria on top
-   * Default is false
+   * @param useRelevance - If true, use relevance scoring for the results, default is false
    */
   setUseRelevance(useRelevance: boolean): NIHProjectQuery {
     this.useRelavance = useRelevance;
@@ -46,18 +52,26 @@ class NIHProjectQuery {
 
   /**
    * Return the result with active projects if set to true
-   * Default is false
+   * @param includeActiveProjects - If true, include active projects in the result, default is false
    */
   setIncludeActiveProjects(includeActiveProjects: boolean): NIHProjectQuery {
     this.includeActiveProjects = includeActiveProjects;
     return this;
   }
 
+  /**
+   * Set the fields to exclude from the result
+   * @param excludeFields - The fields to exclude from the result
+   */
   setExcludeFields(excludeFields: NIHProjectFields[]): NIHProjectQuery {
     this.excludeFields = excludeFields;
     return this;
   }
 
+  /**
+   * Add a field to exclude from the result
+   * @param excludeField - The field to exclude from the result
+   */
   addExcludeField(excludeField: NIHProjectFields): NIHProjectQuery {
     if (!this.excludeFields.includes(excludeField)) {
       this.excludeFields.push(excludeField);
@@ -65,11 +79,19 @@ class NIHProjectQuery {
     return this;
   }
 
+  /**
+   * Remove a field to exclude from the result.
+   * @param excludeField - The field to remove from the exclude list
+   */
   removeExcludeField(excludeField: string): NIHProjectQuery {
     this.excludeFields = this.excludeFields.filter((field) => field !== excludeField);
     return this;
   }
 
+  /**
+   * Set the number of records to return
+   * @param limit - The number of records to return, default is 50
+   */
   setLimit(limit: number): NIHProjectQuery {
     if (limit <= 0) {
       this.limit = 50;
@@ -81,6 +103,10 @@ class NIHProjectQuery {
     return this;
   }
 
+  /**
+   * Set the offset for the records to return
+   * @param offset - The offset for the records to return, default is 0
+   */
   setOffset(offset: number): NIHProjectQuery {
     if (offset < 0) {
       this.offset = 0;
@@ -90,6 +116,11 @@ class NIHProjectQuery {
     return this;
   }
 
+  /**
+   * Execute the query and return the results
+   * @returns - The results of the query
+   * @throws - Error if the NIH Reporter API call fails
+   */
   async execute(): Promise<NIHProject[]> {
     const resp = await fetch("https://api.reporter.nih.gov/v2/projects/search", {
       method: "POST",
@@ -126,6 +157,7 @@ class NIHProjectQuery {
   }
 
   /**
+   * Creates an async iterator that will yield NIHProject objects queried from the NIH Reporter API
    * @param offset to start from, by default it is 0
    * @returns an async iterator that will yield NIHProject objects
    * @throws Error if the NIH Reporter API call fails
@@ -152,6 +184,7 @@ class NIHProjectQuery {
   }
 
   /**
+   * Creates a safe async iterator that will yield NIHProject objects queried from the NIH Reporter API
    * @param offset to start from, by default it is 0
    * @returns a safe async iterator that will yield NIHProject objects in Golang style (value, error) tuple
    */
