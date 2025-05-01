@@ -1,0 +1,30 @@
+name: Publish
+on:
+  workflow_dispatch:
+    branches:
+      - main
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+
+      - name: Build NPM package
+        run: deno task npm
+
+      - name: Publish package to jsr
+        run: jsr publish --allow-slow-types
+
+      - name: Publish package to NPM
+        run: npm publish --access=public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}

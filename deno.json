@@ -1,7 +1,7 @@
 {
   "name": "@adisuper94/nih-reporter",
-  "version": "0.1.0",
-  "exports": "./mod.ts",
+  "version": "0.0.5",
+  "exports": "./lib/index.ts",
   "tasks": {
     "dev": "deno test --allow-net --watch",
     "npm": "deno test --allow-net && deno run -A ./scripts/build_npm.ts"
