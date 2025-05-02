@@ -22,9 +22,9 @@ jobs:
         run: deno task npm
 
       - name: Publish package to jsr
-        run: jsr publish --allow-slow-types
+        run: deno publish --allow-slow-types
 
       - name: Publish package to NPM
-        run: npm publish --access=public --provenance
+        run: npx publish --access=public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}

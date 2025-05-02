@@ -1,6 +1,16 @@
 import { z } from "@zod/mini";
 z.config(z.locales.en());
 
+type NIHPerson = {
+  nihPersonId: number;
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  fullName: string;
+  isContactPI: boolean;
+  title?: string;
+};
+
 const NIHPersonSchema = z.pipe(
   z.interface({
     profile_id: z.number(),
@@ -9,22 +19,50 @@ const NIHPersonSchema = z.pipe(
     middle_name: z.string(),
     full_name: z.string(),
     is_contact_pi: z.boolean(),
-    title: z.optional(z.string()),
+    "title?": z.optional(z.string()),
   }),
   z.transform((p) => {
-    return {
+    const nihPerson: NIHPerson = {
       nihPersonId: p.profile_id,
       firstName: p.first_name,
       lastName: p.last_name,
       middleName: p.middle_name,
       fullName: p.full_name,
       isContactPI: p.is_contact_pi,
-      title: p.title ?? undefined,
+      title: p.title,
     };
+    return nihPerson;
   }),
 );
+type zNIHPerson = z.infer<typeof NIHPersonSchema>;
 
-interface NIHPerson extends z.infer<typeof NIHPersonSchema> {}
+function _testTypeNIHPerson(nihPerson: zNIHPerson): NIHPerson {
+  return nihPerson;
+}
+
+function __testTypeNIHPerson(nihPerson: NIHPerson): zNIHPerson {
+  return nihPerson;
+}
+
+type NIHOrg = {
+  orgName: string;
+  city?: string;
+  country?: string;
+  orgCity: string;
+  orgState: string;
+  orgCountry?: string;
+  orgStateName?: string;
+  orgZipCode: string;
+  orgFips: string;
+  orgIPFCode: string;
+  externalOrgId: number;
+  deptType: string;
+  fipsCountyCode?: string;
+  orgDuns: string[];
+  orgUeis: string[];
+  primaryDuns: string;
+  primaryUei: string;
+};
 
 const NIHOrgSchema = z.pipe(
   z.interface({
@@ -47,28 +85,77 @@ const NIHOrgSchema = z.pipe(
     primary_uei: z.string(),
   }),
   z.transform((o) => {
-    return {
+    const org: NIHOrg = {
       orgName: o.org_name,
-      city: o.city ?? null,
-      country: o.country ?? null,
+      city: o.city ?? undefined,
+      country: o.country ?? undefined,
       orgCity: o.org_city,
       orgState: o.org_state,
-      orgCountry: o.org_country ?? null,
-      orgStateName: o.org_state_name ?? null,
+      orgCountry: o.org_country ?? undefined,
+      orgStateName: o.org_state_name ?? undefined,
       deptType: o.dept_type,
       orgDuns: o.org_duns,
       orgUeis: o.org_ueis,
+      orgZipCode: o.org_zipcode,
       primaryDuns: o.primary_duns,
       primaryUei: o.primary_uei,
       orgFips: o.org_fips,
       orgIPFCode: o.org_ipf_code,
       externalOrgId: o.external_org_id,
-      fipsCountyCode: o.fips_county_code ?? null,
+      fipsCountyCode: o.fips_county_code ?? undefined,
     };
+    return org;
   }),
 );
 
-interface NIHOrg extends z.infer<typeof NIHOrgSchema> {}
+interface zNIHOrg extends z.infer<typeof NIHOrgSchema> {}
+
+function _testTypeNIHOrg(org: zNIHOrg): NIHOrg {
+  return org;
+}
+
+function __testTypeNIHOrg(org: NIHOrg): zNIHOrg {
+  return org;
+}
+
+/**
+ * NIH Project/Award object
+ */
+type NIHProject = {
+  applId: number;
+  subProjectId?: string;
+  fiscalYear: number;
+  projectNum: string;
+  projectSerialNum: string;
+  awardType: string;
+  activityCode: string;
+  awardAmount: number;
+  directCost: number;
+  indirectCost: number;
+  isActive: boolean;
+  congDistrict?: string;
+  projectStartDate: Date;
+  projectEndDate: Date;
+  budgetStartDate: Date;
+  budgetEndDate: Date;
+  principalInvestigators: NIHPerson[];
+  dateAdded: Date;
+  agencyCode: string;
+  arraFunded: string;
+  oppurtunityNumber: string;
+  isNew: boolean;
+  coreProjectNum: string;
+  mechanismCodeDc: string;
+  projectTitle: string;
+  covidResponse?: string;
+  cfdaCode: string;
+  org: NIHOrg;
+  spendingCategories?: number[];
+  spendingCategoriesDesc?: string[];
+  terms?: string[];
+  prefTerms?: string[];
+  abstractText?: string;
+};
 
 const NIHProjectSchema = z.pipe(
   z.interface({
@@ -107,11 +194,12 @@ const NIHProjectSchema = z.pipe(
     abstract_text: z.nullish(z.string()),
   }),
   z.transform((p) => {
-    const org: NIHOrg = p.organization;
+    const org: zNIHOrg = p.organization;
     const pis: NIHPerson[] = p.principal_investigators;
-    return {
+
+    const nihProject: NIHProject = {
       applId: p.appl_id,
-      subProjectId: p.subproject_id,
+      subProjectId: p.subproject_id ?? undefined,
       fiscalYear: p.fiscal_year,
       projectNum: p.project_num,
       projectSerialNum: p.project_serial_num,
@@ -146,16 +234,25 @@ const NIHProjectSchema = z.pipe(
         ? (p.spending_categories_desc.split(";") as string[])
         : undefined,
       prefTerms: typeof p.pref_terms === "string" ? (p.pref_terms.split(";") as string[]) : undefined,
-      abstractText: p.abstract_text,
+      abstractText: p.abstract_text ?? undefined,
     };
+    return nihProject;
   }),
 );
 
-/**
- * NIH Project/Award object
- */
-interface NIHProject extends z.infer<typeof NIHProjectSchema> {}
+interface zNIHProject extends z.infer<typeof NIHProjectSchema> {}
 
+function _testTypeNIHProject(project: zNIHProject): NIHProject {
+  return project;
+}
+
+function __testTypeNIHProject(project: NIHProject): zNIHProject {
+  return project;
+}
+
+/**
+ * NIHProjectFields which can be used to filter the fields returned by the NIH Reporter API
+ */
 type NIHProjectFields =
   | "SpendingCategories"
   | "SpendingCategoriesDesc"
