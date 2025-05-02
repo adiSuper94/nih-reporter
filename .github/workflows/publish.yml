@@ -1,8 +1,6 @@
 name: Publish
 on:
   workflow_dispatch:
-    branches:
-      - main
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -24,7 +22,13 @@ jobs:
       - name: Publish package to jsr
         run: deno publish --allow-slow-types
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.0"
+          registry-url: "https://registry.npmjs.org"
+
       - name: Publish package to NPM
-        run: npx publish --access=public --provenance
+        run: cd npm && npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
