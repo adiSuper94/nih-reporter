@@ -1,7 +1,7 @@
 import { z } from "@zod/mini";
 z.config(z.locales.en());
 
-type NIHPerson = {
+interface NIHPerson {
   nihPersonId: number;
   firstName: string;
   lastName: string;
@@ -9,7 +9,7 @@ type NIHPerson = {
   fullName: string;
   isContactPI: boolean;
   title?: string;
-};
+}
 
 const NIHPersonSchema = z.pipe(
   z.interface({
@@ -44,7 +44,7 @@ function __testTypeNIHPerson(nihPerson: NIHPerson): zNIHPerson {
   return nihPerson;
 }
 
-type NIHOrg = {
+interface NIHOrg {
   orgName: string;
   city?: string;
   country?: string;
@@ -62,7 +62,7 @@ type NIHOrg = {
   orgUeis: string[];
   primaryDuns: string;
   primaryUei: string;
-};
+}
 
 const NIHOrgSchema = z.pipe(
   z.interface({
@@ -121,7 +121,7 @@ function __testTypeNIHOrg(org: NIHOrg): zNIHOrg {
 /**
  * NIH Project/Award object
  */
-type NIHProject = {
+interface NIHProject {
   applId: number;
   subProjectId?: string;
   fiscalYear: number;
@@ -155,7 +155,7 @@ type NIHProject = {
   terms?: string[];
   prefTerms?: string[];
   abstractText?: string;
-};
+}
 
 const NIHProjectSchema = z.pipe(
   z.interface({
