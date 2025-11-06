@@ -1,4 +1,4 @@
-import { z } from "@zod/mini";
+import * as z from "@zod/zod/mini";
 z.config(z.locales.en());
 
 interface NIHPerson {
@@ -12,14 +12,14 @@ interface NIHPerson {
 }
 
 const NIHPersonSchema = z.pipe(
-  z.interface({
+  z.object({
     profile_id: z.number(),
     first_name: z.string(),
     last_name: z.string(),
     middle_name: z.string(),
     full_name: z.string(),
     is_contact_pi: z.boolean(),
-    "title?": z.optional(z.string()),
+    title: z.optional(z.string()),
   }),
   z.transform((p) => {
     const nihPerson: NIHPerson = {
@@ -29,8 +29,10 @@ const NIHPersonSchema = z.pipe(
       middleName: p.middle_name,
       fullName: p.full_name,
       isContactPI: p.is_contact_pi,
-      title: p.title,
     };
+    if (p.title !== null && p.title !== undefined) {
+      nihPerson.title = p.title;
+    }
     return nihPerson;
   }),
 );
@@ -65,7 +67,7 @@ interface NIHOrg {
 }
 
 const NIHOrgSchema = z.pipe(
-  z.interface({
+  z.object({
     org_name: z.string(),
     city: z.nullable(z.string()),
     country: z.nullable(z.string()),
@@ -158,7 +160,7 @@ interface NIHProject {
 }
 
 const NIHProjectSchema = z.pipe(
-  z.interface({
+  z.object({
     appl_id: z.number(),
     subproject_id: z.nullish(z.string()),
     fiscal_year: z.number(),
