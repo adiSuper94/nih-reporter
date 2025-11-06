@@ -10,7 +10,7 @@ const projects = await query
   .execute();
 
 Deno.test("Award count", () => {
-  assertEquals(projects.length, 9);
+  assertEquals(projects.length, 10);
 });
 
 Deno.test("Excluded fields not present", () => {
@@ -28,7 +28,7 @@ Deno.test("Iterator test", async () => {
   assertEquals(result.value?.applId, 11049028);
   result = await iter.next();
   assertEquals(result.done, false);
-  assertEquals(result.value?.applId, 10228110);
+  assertEquals(result.value?.applId, 11375359);
 });
 
 Deno.test("Iterator safe test", async () => {
@@ -40,7 +40,7 @@ Deno.test("Iterator safe test", async () => {
   ({ value, done } = await iterSafe.next());
   assertEquals(done, false);
   [result, _err] = value;
-  assertEquals(result?.applId, 10228110);
+  assertEquals(result?.applId, 11375359);
 });
 
 Deno.test("Totally consumed iterator", async () => {
