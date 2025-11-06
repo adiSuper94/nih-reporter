@@ -1,6 +1,6 @@
 {
   "name": "@adisuper94/nih-reporter",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "exports": "./lib/index.ts",
   "tasks": {
     "dev": "deno test --allow-net --watch",
