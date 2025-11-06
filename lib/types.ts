@@ -1,4 +1,4 @@
-import * as z from "@zod/zod/mini";
+import * as z from "zod/mini";
 z.config(z.locales.en());
 
 interface NIHPerson {

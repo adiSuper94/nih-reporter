@@ -3,9 +3,9 @@ import { build, emptyDir } from "@deno/dnt";
 await emptyDir("./npm");
 import denoJson from "../deno.json" with { type: "json" };
 const { name, version, license, imports } = denoJson;
-const jsrZodVersion = imports["@zod/zod"];
+const jsrZodVersion = imports["zod"];
 
-const zodVersion = jsrZodVersion.replace("jsr:@zod/zod@", "");
+const zodVersion = jsrZodVersion.replace("npm:zod@", "");
 console.log(`zod version : ${zodVersion}`);
 
 await build({
