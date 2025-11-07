@@ -1,5 +1,19 @@
-import { type NIHProject, type NIHProjectFields, parseNIHProject } from "./types.ts";
+import { parseNIHProject } from "./types.ts";
+import type { ExcludeNIHProjectFields, NIHProject, NIHProjectFields } from "./types.ts";
 
+interface ProjectQueryBody {
+  criteria: {
+    use_relevance: boolean;
+    fiscal_years: number[];
+    include_active_projects: boolean;
+    pi_profile_ids: number[];
+  };
+  exclude_fields: ExcludeNIHProjectFields[];
+  offset: number;
+  limit: number;
+  sort_order?: "asc" | "desc";
+  sort_field?: NIHProjectFields;
+}
 /**
  * NIHProjectQuery class to query the NIH Reporter API for projects
  * All methods follow the builder pattern (are chainable) and return the same instance of the class
@@ -9,7 +23,9 @@ class NIHProjectQuery {
   private fiscalYears: number[];
   private includeActiveProjects: boolean;
   private piProfileIds: number[];
-  private excludeFields: NIHProjectFields[];
+  private excludeFields: ExcludeNIHProjectFields[];
+  private sortOrder?: "asc" | "desc";
+  private sortField?: NIHProjectFields;
   private offset: number;
   private limit: number;
 
@@ -63,7 +79,7 @@ class NIHProjectQuery {
    * Set the fields to exclude from the result
    * @param excludeFields - The fields to exclude from the result
    */
-  setExcludeFields(excludeFields: NIHProjectFields[]): NIHProjectQuery {
+  setExcludeFields(excludeFields: ExcludeNIHProjectFields[]): NIHProjectQuery {
     this.excludeFields = excludeFields;
     return this;
   }
@@ -72,7 +88,7 @@ class NIHProjectQuery {
    * Add a field to exclude from the result
    * @param excludeField - The field to exclude from the result
    */
-  addExcludeField(excludeField: NIHProjectFields): NIHProjectQuery {
+  addExcludeField(excludeField: ExcludeNIHProjectFields): NIHProjectQuery {
     if (!this.excludeFields.includes(excludeField)) {
       this.excludeFields.push(excludeField);
     }
@@ -117,28 +133,52 @@ class NIHProjectQuery {
   }
 
   /**
+   * Set the sort order for the results
+   * @param sortOrder - The sort order for the results, either "asc" or "desc"
+   */
+  setSortOrder(sortOrder: "asc" | "desc"): NIHProjectQuery {
+    this.sortOrder = sortOrder;
+    return this;
+  }
+
+  /**
+   * Set the field to sort the results by
+   * @param sortField - The field to sort the results by
+   */
+  setSortField(sortField: NIHProjectFields): NIHProjectQuery {
+    this.sortField = sortField;
+    return this;
+  }
+
+  /**
    * Execute the query and return the results
    * @returns - The results of the query
    * @throws - Error if the NIH Reporter API call fails
    */
   async execute(): Promise<NIHProject[]> {
+    const queryBody: ProjectQueryBody = {
+      criteria: {
+        use_relevance: this.useRelavance,
+        fiscal_years: this.fiscalYears,
+        include_active_projects: this.includeActiveProjects,
+        pi_profile_ids: this.piProfileIds,
+      },
+      exclude_fields: this.excludeFields,
+      offset: this.offset,
+      limit: this.limit,
+    };
+    if (this.sortField) {
+      queryBody.sort_order = this.sortOrder ?? "asc";
+      queryBody.sort_field = this.sortField;
+    }
     const resp = await fetch("https://api.reporter.nih.gov/v2/projects/search", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        criteria: {
-          use_relevance: this.useRelavance,
-          fiscal_years: this.fiscalYears,
-          include_active_projects: this.includeActiveProjects,
-          pi_profile_ids: this.piProfileIds,
-        },
-        exclude_fields: this.excludeFields,
-        offset: this.offset,
-        limit: this.limit,
-      }),
+
+      body: JSON.stringify(queryBody),
     });
     const data = await resp.json();
     const results = data.results;

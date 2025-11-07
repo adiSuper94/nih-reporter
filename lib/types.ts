@@ -51,18 +51,18 @@ interface NIHOrg {
   city?: string;
   country?: string;
   orgCity: string;
-  orgState: string;
+  orgState?: string;
   orgCountry?: string;
   orgStateName?: string;
   orgZipCode: string;
   orgFips: string;
   orgIPFCode: string;
   externalOrgId: number;
-  deptType: string;
+  deptType?: string;
   fipsCountyCode?: string;
-  orgDuns: string[];
+  orgDuns?: string[];
   orgUeis: string[];
-  primaryDuns: string;
+  primaryDuns?: string;
   primaryUei: string;
 }
 
@@ -72,18 +72,18 @@ const NIHOrgSchema = z.pipe(
     city: z.nullable(z.string()),
     country: z.nullable(z.string()),
     org_city: z.string(),
-    org_state: z.string(),
+    org_state: z.nullish(z.string()),
     org_country: z.string(),
     org_state_name: z.nullable(z.string()),
     org_zipcode: z.string(),
     org_fips: z.string(),
     org_ipf_code: z.string(),
     external_org_id: z.coerce.number(),
-    dept_type: z.string(),
+    dept_type: z.nullish(z.string()),
     fips_county_code: z.nullish(z.string()),
-    org_duns: z.array(z.string()),
+    org_duns: z.nullish(z.array(z.string())),
     org_ueis: z.array(z.string()),
-    primary_duns: z.string(),
+    primary_duns: z.nullish(z.string()),
     primary_uei: z.string(),
   }),
   z.transform((o) => {
@@ -92,20 +92,28 @@ const NIHOrgSchema = z.pipe(
       city: o.city ?? undefined,
       country: o.country ?? undefined,
       orgCity: o.org_city,
-      orgState: o.org_state,
       orgCountry: o.org_country ?? undefined,
       orgStateName: o.org_state_name ?? undefined,
-      deptType: o.dept_type,
-      orgDuns: o.org_duns,
       orgUeis: o.org_ueis,
       orgZipCode: o.org_zipcode,
-      primaryDuns: o.primary_duns,
       primaryUei: o.primary_uei,
       orgFips: o.org_fips,
       orgIPFCode: o.org_ipf_code,
       externalOrgId: o.external_org_id,
       fipsCountyCode: o.fips_county_code ?? undefined,
     };
+    if (o.dept_type != null) {
+      org.deptType = o.dept_type;
+    }
+    if (o.org_duns != null) {
+      org.orgDuns = o.org_duns;
+    }
+    if (o.primary_duns != null) {
+      org.primaryDuns = o.primary_duns;
+    }
+    if (o.org_state != null) {
+      org.orgState = o.org_state;
+    }
     return org;
   }),
 );
@@ -128,29 +136,29 @@ interface NIHProject {
   subProjectId?: string;
   fiscalYear: number;
   projectNum: string;
-  projectSerialNum: string;
-  awardType: string;
+  projectSerialNum?: string;
+  awardType?: string;
   activityCode: string;
-  awardAmount: number;
-  directCost: number;
-  indirectCost: number;
+  awardAmount?: number;
+  directCost?: number;
+  indirectCost?: number;
   isActive: boolean;
   congDistrict?: string;
-  projectStartDate: Date;
-  projectEndDate: Date;
-  budgetStartDate: Date;
-  budgetEndDate: Date;
+  projectStartDate?: Date;
+  projectEndDate?: Date;
+  budgetStartDate?: Date;
+  budgetEndDate?: Date;
   principalInvestigators: NIHPerson[];
   dateAdded: Date;
   agencyCode: string;
   arraFunded: string;
-  oppurtunityNumber: string;
+  oppurtunityNumber?: string;
   isNew: boolean;
   coreProjectNum: string;
   mechanismCodeDc: string;
   projectTitle: string;
-  covidResponse?: string;
-  cfdaCode: string;
+  covidResponse?: string[];
+  cfdaCode?: string;
   org: NIHOrg;
   spendingCategories?: number[];
   spendingCategoriesDesc?: string[];
@@ -165,29 +173,29 @@ const NIHProjectSchema = z.pipe(
     subproject_id: z.nullish(z.string()),
     fiscal_year: z.number(),
     project_num: z.string(),
-    project_serial_num: z.string(),
-    award_type: z.string(),
+    project_serial_num: z.nullish(z.string()),
+    award_type: z.nullish(z.string()),
     activity_code: z.string(),
-    award_amount: z.number(),
-    direct_cost_amt: z.number(),
-    indirect_cost_amt: z.number(),
+    award_amount: z.nullish(z.number()),
+    direct_cost_amt: z.nullish(z.number()),
+    indirect_cost_amt: z.nullish(z.number()),
     is_active: z.boolean(),
     cong_district: z.optional(z.string()),
-    project_start_date: z.string(),
-    project_end_date: z.string(),
-    budget_start: z.string(),
-    budget_end: z.string(),
+    project_start_date: z.nullish(z.string()),
+    project_end_date: z.nullish(z.string()),
+    budget_start: z.nullish(z.string()),
+    budget_end: z.nullish(z.string()),
     principal_investigators: z.array(NIHPersonSchema),
     date_added: z.string(),
     agency_code: z.string(),
     arra_funded: z.string(),
-    opportunity_number: z.string(),
+    opportunity_number: z.nullish(z.string()),
     is_new: z.boolean(),
     core_project_num: z.string(),
     mechanism_code_dc: z.string(),
     project_title: z.string(),
-    covid_response: z.nullish(z.string()),
-    cfda_code: z.string(),
+    covid_response: z.nullish(z.array(z.string())),
+    cfda_code: z.nullable(z.string()),
     organization: NIHOrgSchema,
     spending_categories: z.nullish(z.array(z.coerce.number())),
     spending_categories_desc: z.nullish(z.string()),
@@ -204,29 +212,18 @@ const NIHProjectSchema = z.pipe(
       subProjectId: p.subproject_id ?? undefined,
       fiscalYear: p.fiscal_year,
       projectNum: p.project_num,
-      projectSerialNum: p.project_serial_num,
-      awardType: p.award_type,
       activityCode: p.activity_code,
-      awardAmount: p.award_amount,
-      directCost: p.direct_cost_amt,
-      indirectCost: p.indirect_cost_amt,
       isActive: p.is_active,
       congDistrict: p.cong_district,
-      projectStartDate: new Date(p.project_start_date),
-      projectEndDate: new Date(p.project_end_date),
-      budgetStartDate: new Date(p.budget_start),
-      budgetEndDate: new Date(p.budget_end),
       principalInvestigators: pis,
       dateAdded: new Date(p.date_added),
       agencyCode: p.agency_code,
       arraFunded: p.arra_funded,
-      oppurtunityNumber: p.opportunity_number,
       isNew: p.is_new,
       coreProjectNum: p.core_project_num,
       mechanismCodeDc: p.mechanism_code_dc,
       projectTitle: p.project_title,
       covidResponse: p.covid_response ?? undefined,
-      cfdaCode: p.cfda_code,
       org: org,
       spendingCategories: typeof p.spending_categories === "object" ? (p.spending_categories as number[]) : undefined,
       terms: typeof p.terms === "string"
@@ -238,6 +235,39 @@ const NIHProjectSchema = z.pipe(
       prefTerms: typeof p.pref_terms === "string" ? (p.pref_terms.split(";") as string[]) : undefined,
       abstractText: p.abstract_text ?? undefined,
     };
+    if (p.cfda_code != null) {
+      nihProject.cfdaCode = p.cfda_code;
+    }
+    if (p.project_start_date != null) {
+      nihProject.projectStartDate = new Date(p.project_start_date);
+    }
+    if (p.project_end_date != null) {
+      nihProject.projectEndDate = new Date(p.project_end_date);
+    }
+    if (p.award_amount != null) {
+      nihProject.awardAmount = p.award_amount;
+    }
+    if (p.direct_cost_amt != null) {
+      nihProject.directCost = p.direct_cost_amt;
+    }
+    if (p.indirect_cost_amt != null) {
+      nihProject.indirectCost = p.indirect_cost_amt;
+    }
+    if (p.project_serial_num != null) {
+      nihProject.projectSerialNum = p.project_serial_num;
+    }
+    if (p.award_type != null) {
+      nihProject.awardType = p.award_type;
+    }
+    if (p.budget_start != null) {
+      nihProject.budgetStartDate = new Date(p.budget_start);
+    }
+    if (p.budget_end != null) {
+      nihProject.budgetEndDate = new Date(p.budget_end);
+    }
+    if (p.opportunity_number != null) {
+      nihProject.oppurtunityNumber = p.opportunity_number;
+    }
     return nihProject;
   }),
 );
@@ -255,7 +285,7 @@ function __testTypeNIHProject(project: NIHProject): zNIHProject {
 /**
  * NIHProjectFields which can be used to filter the fields returned by the NIH Reporter API
  */
-type NIHProjectFields =
+type ExcludeNIHProjectFields =
   | "SpendingCategories"
   | "SpendingCategoriesDesc"
   | "ProgramOfficers"
@@ -265,13 +295,17 @@ type NIHProjectFields =
   | "CovidResponse"
   | "SubprojectId";
 
+type NIHProjectFields = ExcludeNIHProjectFields | "ApplId";
+
 export function parseNIHProject(obj: unknown): [NIHProject, undefined] | [undefined, Error] {
   const result = NIHProjectSchema.safeParse(obj);
   if (result.success) {
     return [result.data, undefined];
   } else {
+    console.log(obj);
+    console.log(result.error);
     return [undefined, result.error];
   }
 }
 
-export type { NIHProject, NIHProjectFields };
+export type { ExcludeNIHProjectFields, NIHProject, NIHProjectFields };
