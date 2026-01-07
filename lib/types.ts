@@ -50,20 +50,20 @@ interface NIHOrg {
   orgName: string;
   city?: string;
   country?: string;
-  orgCity: string;
+  orgCity?: string;
   orgState?: string;
   orgCountry?: string;
   orgStateName?: string;
-  orgZipCode: string;
+  orgZipCode?: string;
   orgFips: string;
-  orgIPFCode: string;
+  orgIPFCode?: string;
   externalOrgId: number;
   deptType?: string;
   fipsCountyCode?: string;
   orgDuns?: string[];
-  orgUeis: string[];
+  orgUeis?: string[];
   primaryDuns?: string;
-  primaryUei: string;
+  primaryUei?: string;
 }
 
 const NIHOrgSchema = z.pipe(
@@ -71,34 +71,29 @@ const NIHOrgSchema = z.pipe(
     org_name: z.string(),
     city: z.nullable(z.string()),
     country: z.nullable(z.string()),
-    org_city: z.string(),
+    org_city: z.nullish(z.string()),
     org_state: z.nullish(z.string()),
     org_country: z.string(),
     org_state_name: z.nullable(z.string()),
-    org_zipcode: z.string(),
+    org_zipcode: z.nullish(z.string()),
     org_fips: z.string(),
-    org_ipf_code: z.string(),
+    org_ipf_code: z.nullish(z.string()),
     external_org_id: z.coerce.number(),
     dept_type: z.nullish(z.string()),
     fips_county_code: z.nullish(z.string()),
     org_duns: z.nullish(z.array(z.string())),
-    org_ueis: z.array(z.string()),
+    org_ueis: z.nullable(z.array(z.string())),
     primary_duns: z.nullish(z.string()),
-    primary_uei: z.string(),
+    primary_uei: z.nullish(z.string()),
   }),
   z.transform((o) => {
     const org: NIHOrg = {
       orgName: o.org_name,
       city: o.city ?? undefined,
       country: o.country ?? undefined,
-      orgCity: o.org_city,
       orgCountry: o.org_country ?? undefined,
       orgStateName: o.org_state_name ?? undefined,
-      orgUeis: o.org_ueis,
-      orgZipCode: o.org_zipcode,
-      primaryUei: o.primary_uei,
       orgFips: o.org_fips,
-      orgIPFCode: o.org_ipf_code,
       externalOrgId: o.external_org_id,
       fipsCountyCode: o.fips_county_code ?? undefined,
     };
@@ -113,6 +108,21 @@ const NIHOrgSchema = z.pipe(
     }
     if (o.org_state != null) {
       org.orgState = o.org_state;
+    }
+    if (o.org_city != null) {
+      org.orgCity = o.org_city;
+    }
+    if (o.org_zipcode != null) {
+      org.orgZipCode = o.org_zipcode;
+    }
+    if (o.org_ipf_code != null) {
+      org.orgIPFCode = o.org_ipf_code;
+    }
+    if (o.org_ueis != null) {
+      org.orgUeis = o.org_ueis;
+    }
+    if (o.primary_uei != null) {
+      org.primaryUei = o.primary_uei;
     }
     return org;
   }),

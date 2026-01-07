@@ -28,8 +28,9 @@ class NIHProjectQuery {
   private sortField?: NIHProjectFields;
   private offset: number;
   private limit: number;
+  private retryCount: number;
 
-  constructor() {
+  constructor(retryCount = 2) {
     this.useRelavance = false;
     this.fiscalYears = [];
     this.includeActiveProjects = true;
@@ -37,6 +38,7 @@ class NIHProjectQuery {
     this.excludeFields = [];
     this.offset = 0;
     this.limit = 50;
+    this.retryCount = retryCount;
   }
 
   /**
@@ -150,50 +152,72 @@ class NIHProjectQuery {
     return this;
   }
 
+  private isRetryableError(resp: Response): boolean {
+    if (resp.status >= 500 && resp.status < 600) {
+      return true;
+    }
+    if (resp.status === 429) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Execute the query and return the results
    * @returns - The results of the query
    * @throws - Error if the NIH Reporter API call fails
    */
   async execute(): Promise<NIHProject[]> {
-    const queryBody: ProjectQueryBody = {
-      criteria: {
-        use_relevance: this.useRelavance,
-        fiscal_years: this.fiscalYears,
-        include_active_projects: this.includeActiveProjects,
-        pi_profile_ids: this.piProfileIds,
-      },
-      exclude_fields: this.excludeFields,
-      offset: this.offset,
-      limit: this.limit,
-    };
-    if (this.sortField) {
-      queryBody.sort_order = this.sortOrder ?? "asc";
-      queryBody.sort_field = this.sortField;
-    }
-    const resp = await fetch("https://api.reporter.nih.gov/v2/projects/search", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify(queryBody),
-    });
-    const data = await resp.json();
-    const results = data.results;
-    if (typeof results != "object") {
-      const errMsg = data[0];
-      throw new Error(`NIH API err_msg: ${errMsg}`);
-    }
-    const projects: NIHProject[] = results.map((p: unknown) => {
-      const [project, err] = parseNIHProject(p);
-      if (err) {
-        throw new Error(`NIH API parse err_msg: ${JSON.stringify(err, null, 1)}`);
+    let resp: Response;
+    let tryCount = 0;
+    do {
+      const queryBody: ProjectQueryBody = {
+        criteria: {
+          use_relevance: this.useRelavance,
+          fiscal_years: this.fiscalYears,
+          include_active_projects: this.includeActiveProjects,
+          pi_profile_ids: this.piProfileIds,
+        },
+        exclude_fields: this.excludeFields,
+        offset: this.offset,
+        limit: this.limit,
+      };
+      if (this.sortField) {
+        queryBody.sort_order = this.sortOrder ?? "asc";
+        queryBody.sort_field = this.sortField;
       }
-      return project;
-    });
-    return projects;
+      resp = await fetch("https://api.reporter.nih.gov/v2/projects/search", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(queryBody),
+      });
+      if (!resp.ok) {
+        await resp.body?.cancel();
+        if (this.isRetryableError(resp)) {
+          continue;
+        }
+      }
+      const data = await resp.json();
+      const results = data.results;
+      if (typeof results != "object") {
+        const errMsg = data[0];
+        throw new Error(`NIH API err_msg: ${errMsg}`);
+      }
+      const projects: NIHProject[] = results.map((p: unknown) => {
+        const [project, err] = parseNIHProject(p);
+        if (err) {
+          throw new Error(`NIH API parse err_msg: ${JSON.stringify(err, null, 1)}`);
+        }
+        return project;
+      });
+      return projects;
+    } while (this.retryCount > ++tryCount);
+    // deno-lint-ignore no-unreachable -- this is reachable, bug in deno lint
+    throw new Error(`NIH API HTTP error: ${resp.status} ${resp.statusText}`);
   }
 
   /**
