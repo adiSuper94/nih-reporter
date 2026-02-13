@@ -1,0 +1,9 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@adisuper94/nih-reporter",
+  "version": "0.0.13",
+  "exports": {
+    "./effect": "./lib/effect/index.ts",
+    ".": "./lib/index.ts"
+  }
+}
