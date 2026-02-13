@@ -1,8 +1,12 @@
 {
-  "name": "nih-reporter",
-  "version": "1.0.0",
+  "name": "@adisuper94/nih-reporter",
+  "version": "0.0.13",
   "description": "A TypeScript/JavaScript wrapper to call NIH reporter API",
-  "keywords": [],
+  "keywords": [
+    "api",
+    "nih",
+    "reporter"
+  ],
   "homepage": "https://github.com/adiSuper94/nih-reporter#readme",
   "bugs": {
     "url": "https://github.com/adiSuper94/nih-reporter/issues"
@@ -15,6 +19,10 @@
   },
   "type": "module",
   "main": "./lib/index.ts",
+  "exports": {
+    "./effect": "./lib/effect/index.ts",
+    ".": "./lib/index.ts"
+  },
   "scripts": {
     "prepare": "effect-language-service patch",
     "test": "node --test tests/*.test.ts",
@@ -25,6 +33,7 @@
     "lint:fix": "oxlint --fix"
   },
   "dependencies": {
+    "@effect/platform": "^0.94.4",
     "effect": "^3.19.16",
     "zod": "^4.3.6"
   },
