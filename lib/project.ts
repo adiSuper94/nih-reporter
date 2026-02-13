@@ -196,8 +196,8 @@ class NIHProjectQuery {
         body: JSON.stringify(queryBody),
       });
       if (!resp.ok) {
-        await resp.body?.cancel();
         if (this.isRetryableError(resp)) {
+          await resp.body?.cancel();
           continue;
         }
       }
@@ -227,23 +227,16 @@ class NIHProjectQuery {
    * @throws Error if the NIH Reporter API call fails
    */
   async *iterator(offset = 0): AsyncGenerator<NIHProject, void, void> {
-    let buffer: NIHProject[] = [];
-    let idx = 0;
     while (true) {
-      if (idx >= buffer.length) {
-        if (buffer.length != 0 && buffer.length < this.limit) {
-          return;
-        }
-        this.setOffset(offset);
-        const projects = await this.execute();
-        offset += this.limit;
-        buffer = projects;
-        idx = 0;
+      this.setOffset(offset);
+      const projects = await this.execute();
+      offset += this.limit;
+      for (const project of projects) {
+        yield project;
       }
-      if (idx >= buffer.length) {
+      if (projects.length < this.limit) {
         return;
       }
-      yield buffer[idx++];
     }
   }
 

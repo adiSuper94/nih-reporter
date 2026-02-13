@@ -23,16 +23,16 @@ await build({
     license: license,
     keywords: ["nih", "nih-reporter", "api"],
     repository: {
-      "type": "git",
-      "url": "git+https://github.com/adiSuper94/nih-reporter.git",
+      type: "git",
+      url: "git+https://github.com/adiSuper94/nih-reporter.git",
     },
     bugs: {
-      "url": "https://github.com/adiSuper94/nih-reporter/issues",
+      url: "https://github.com/adiSuper94/nih-reporter/issues",
     },
     homepage: "https://github.com/adiSuper94/nih-reporter#readme",
     author: "Aditya Subramanian",
     dependencies: {
-      "zod": zodVersion,
+      zod: zodVersion,
     },
   },
   postBuild() {
