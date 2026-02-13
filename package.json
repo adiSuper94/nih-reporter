@@ -1,0 +1,38 @@
+{
+  "name": "nih-reporter",
+  "version": "1.0.0",
+  "description": "A TypeScript/JavaScript wrapper to call NIH reporter API",
+  "keywords": [],
+  "homepage": "https://github.com/adiSuper94/nih-reporter#readme",
+  "bugs": {
+    "url": "https://github.com/adiSuper94/nih-reporter/issues"
+  },
+  "license": "ISC",
+  "author": "Aditya Subramanian",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adiSuper94/nih-reporter.git"
+  },
+  "type": "module",
+  "main": "./lib/index.ts",
+  "scripts": {
+    "prepare": "effect-language-service patch",
+    "test": "node --test tests/*.test.ts",
+    "check": "tsc",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
+  },
+  "dependencies": {
+    "effect": "^3.19.16",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@effect/language-service": "^0.73.0",
+    "@types/node": "^24.0.0",
+    "oxfmt": "^0.28.0",
+    "oxlint": "^1.43.0",
+    "typescript": "^5.9.3"
+  }
+}

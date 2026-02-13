@@ -34,7 +34,7 @@ const NIHPersonSchema = z.pipe(
       nihPerson.title = p.title;
     }
     return nihPerson;
-  }),
+  })
 );
 type zNIHPerson = z.infer<typeof NIHPersonSchema>;
 
@@ -55,7 +55,7 @@ interface NIHOrg {
   orgCountry?: string;
   orgStateName?: string;
   orgZipCode?: string;
-  orgFips: string;
+  orgFips?: string;
   orgIPFCode?: string;
   externalOrgId: number;
   deptType?: string;
@@ -76,7 +76,7 @@ const NIHOrgSchema = z.pipe(
     org_country: z.string(),
     org_state_name: z.nullable(z.string()),
     org_zipcode: z.nullish(z.string()),
-    org_fips: z.string(),
+    org_fips: z.nullish(z.string()),
     org_ipf_code: z.nullish(z.string()),
     external_org_id: z.coerce.number(),
     dept_type: z.nullish(z.string()),
@@ -93,7 +93,6 @@ const NIHOrgSchema = z.pipe(
       country: o.country ?? undefined,
       orgCountry: o.org_country ?? undefined,
       orgStateName: o.org_state_name ?? undefined,
-      orgFips: o.org_fips,
       externalOrgId: o.external_org_id,
       fipsCountyCode: o.fips_county_code ?? undefined,
     };
@@ -124,8 +123,11 @@ const NIHOrgSchema = z.pipe(
     if (o.primary_uei != null) {
       org.primaryUei = o.primary_uei;
     }
+    if (o.org_fips) {
+      org.orgFips = o.org_fips;
+    }
     return org;
-  }),
+  })
 );
 
 interface zNIHOrg extends z.infer<typeof NIHOrgSchema> {}
@@ -236,12 +238,12 @@ const NIHProjectSchema = z.pipe(
       covidResponse: p.covid_response ?? undefined,
       org: org,
       spendingCategories: typeof p.spending_categories === "object" ? (p.spending_categories as number[]) : undefined,
-      terms: typeof p.terms === "string"
-        ? (p.terms.match(/<([^>]+)>/g)?.map((tag) => tag.slice(1, -1)) || [])
-        : undefined,
-      spendingCategoriesDesc: typeof p.spending_categories_desc === "string"
-        ? (p.spending_categories_desc.split(";") as string[])
-        : undefined,
+      terms:
+        typeof p.terms === "string" ? p.terms.match(/<([^>]+)>/g)?.map((tag) => tag.slice(1, -1)) || [] : undefined,
+      spendingCategoriesDesc:
+        typeof p.spending_categories_desc === "string"
+          ? (p.spending_categories_desc.split(";") as string[])
+          : undefined,
       prefTerms: typeof p.pref_terms === "string" ? (p.pref_terms.split(";") as string[]) : undefined,
       abstractText: p.abstract_text ?? undefined,
     };
@@ -279,7 +281,7 @@ const NIHProjectSchema = z.pipe(
       nihProject.oppurtunityNumber = p.opportunity_number;
     }
     return nihProject;
-  }),
+  })
 );
 
 interface zNIHProject extends z.infer<typeof NIHProjectSchema> {}
