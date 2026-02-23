@@ -1,6 +1,6 @@
 {
   "name": "@adisuper94/nih-reporter",
-  "version": "0.0.14",
+  "version": "0.0.16",
   "description": "A TypeScript/JavaScript wrapper to call NIH reporter API",
   "keywords": [
     "api",
@@ -18,20 +18,27 @@
     "url": "git+https://github.com/adiSuper94/nih-reporter.git"
   },
   "type": "module",
-  "main": "./lib/index.ts",
+  "main": "./dist/lib/index.js",
   "exports": {
-    ".dist/effect": "./dist/lib/effect/index.js",
-    ".": "./dist/lib/index.js"
+    "./effect": {
+      "types": "./dist/lib/effect/index.d.ts",
+      "default": "./dist/lib/effect/index.js"
+    },
+    ".": {
+      "types": "./dist/lib/index.d.ts",
+      "default": "./dist/lib/index.js"
+    }
   },
   "scripts": {
     "prepare": "effect-language-service patch",
+    "prepublish": "npm run build",
+    "build": "tsc",
     "test": "tsc && node --test dist/tests/*.test.js",
-    "check": "tsc",
+    "check": "tsc --noEmit",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
-    "build": "tsc"
+    "lint:fix": "oxlint --fix"
   },
   "dependencies": {
     "@effect/platform": "^0.94.4",
