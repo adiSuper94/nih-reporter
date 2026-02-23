@@ -1,6 +1,6 @@
-import { parseNIHProject } from "./types.ts";
-import type { NIHProject } from "./types.ts";
-import { NihQueryBuilder } from "./query-builder.ts";
+import { parseNIHProject } from "./types.js";
+import type { NIHProject } from "./types.js";
+import { NihQueryBuilder } from "./query-builder.js";
 
 class NIHProjectQuery extends NihQueryBuilder {
   private retryCount: number;

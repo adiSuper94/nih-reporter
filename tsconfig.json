@@ -1,12 +1,15 @@
 {
   "$schema": "https://www.schemastore.org/tsconfig.json",
   "compilerOptions": {
-    "noEmit": true,
+    "noEmit": false,
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
     "strict": true,
     "module": "nodenext",
     "types": ["node"],
     "skipLibCheck": true,
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "erasableSyntaxOnly": true,
     "noUncheckedIndexedAccess": true,
     "plugins": [

@@ -20,17 +20,18 @@
   "type": "module",
   "main": "./lib/index.ts",
   "exports": {
-    "./effect": "./lib/effect/index.ts",
-    ".": "./lib/index.ts"
+    ".dist/effect": "./dist/lib/effect/index.js",
+    ".": "./dist/lib/index.js"
   },
   "scripts": {
     "prepare": "effect-language-service patch",
-    "test": "node --test tests/*.test.ts",
+    "test": "tsc && node --test dist/tests/*.test.js",
     "check": "tsc",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
+    "lint:fix": "oxlint --fix",
+    "build": "tsc"
   },
   "dependencies": {
     "@effect/platform": "^0.94.4",

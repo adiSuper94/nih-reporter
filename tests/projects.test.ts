@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { NIHProjectQuery } from "../lib/index.ts";
+import { NIHProjectQuery } from "../lib/index.js";
 
 const query = new NIHProjectQuery();
 const personIds = [

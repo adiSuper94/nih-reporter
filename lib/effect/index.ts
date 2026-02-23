@@ -1,9 +1,9 @@
 import { Schema } from "effect";
 import { HttpClient, HttpClientRequest, HttpBody } from "@effect/platform";
 import { Effect, Schedule, Stream } from "effect";
-import { ParseError, ApiError } from "./errors.ts";
+import { ParseError, ApiError } from "./errors.js";
 import type { NihApiError } from "./errors.ts";
-import { NihQueryBuilder } from "../query-builder.ts";
+import { NihQueryBuilder } from "../query-builder.js";
 
 const NIHPerson = Schema.Struct({
   profile_id: Schema.Number,

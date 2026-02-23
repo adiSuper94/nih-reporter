@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { Effect, Layer, Stream } from "effect";
 import { FetchHttpClient } from "@effect/platform";
-import { NIHProjectQuery } from "../lib/effect/index.ts";
+import { NIHProjectQuery } from "../lib/effect/index.js";
 
 const personIds = [
   1857551, 1857677, 1857698, 1857725, 1857758, 1857771, 1857796, 1857848, 1857855, 1857861, 1857911, 1857928, 1857967,
