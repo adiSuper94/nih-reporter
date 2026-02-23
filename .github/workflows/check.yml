@@ -2,9 +2,6 @@ name: Lint and format
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
 
 permissions:
   contents: read
@@ -23,7 +20,7 @@ jobs:
           node-version: "24"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Check Formatting
         run: npm run fmt:check
