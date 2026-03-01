@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { Effect, Layer, Stream } from "effect";
-import { FetchHttpClient } from "@effect/platform";
+import { FetchHttpClient } from "effect/unstable/http";
 import { NIHProjectQuery } from "../lib/effect/index.js";
 
 const personIds = [
@@ -26,7 +26,7 @@ function createQuery() {
 
 test("Effect API - returns projects", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(50).setOffset(0).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(50).setOffset(0).execute()).pipe(Effect.provide(testLayer))
   );
 
   assert.strictEqual(projects.length, 50);
@@ -34,7 +34,7 @@ test("Effect API - returns projects", async () => {
 
 test("Effect API - first project has expected applId", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(50).setOffset(0).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(50).setOffset(0).execute()).pipe(Effect.provide(testLayer))
   );
 
   const project = projects[0];
@@ -44,7 +44,7 @@ test("Effect API - first project has expected applId", async () => {
 
 test("Effect API - second project has expected applId", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(50).setOffset(0).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(50).setOffset(0).execute()).pipe(Effect.provide(testLayer))
   );
 
   const project = projects[1];
@@ -54,10 +54,11 @@ test("Effect API - second project has expected applId", async () => {
 
 test("Effect API - excluded fields are not present", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(50).setOffset(0).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(50).setOffset(0).execute()).pipe(Effect.provide(testLayer))
   );
 
   for (const project of projects) {
+    console.log(project.project_end_date);
     assert.strictEqual(project.pref_terms, undefined);
     assert.strictEqual(project.terms, undefined);
     assert.strictEqual(project.abstract_text, undefined);
@@ -66,7 +67,7 @@ test("Effect API - excluded fields are not present", async () => {
 
 test("Effect API - project has expected fields", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(50).setOffset(0).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(50).setOffset(0).execute()).pipe(Effect.provide(testLayer))
   );
 
   const project = projects[0];
@@ -78,7 +79,7 @@ test("Effect API - project has expected fields", async () => {
 
 test("Effect API - supports pagination with offset", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(10).setOffset(50).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(10).setOffset(50).execute()).pipe(Effect.provide(testLayer))
   );
 
   assert.ok(projects.length >= 0);
@@ -86,7 +87,7 @@ test("Effect API - supports pagination with offset", async () => {
 
 test("Effect API - schema validation works", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(50).setOffset(0).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(50).setOffset(0).execute()).pipe(Effect.provide(testLayer))
   );
 
   for (const project of projects) {
@@ -99,7 +100,7 @@ test("Effect API - schema validation works", async () => {
 
 test("Effect API - organization data is parsed", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(50).setOffset(0).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(50).setOffset(0).execute()).pipe(Effect.provide(testLayer))
   );
 
   const projectWithOrg = projects.find((p) => "organization" in p);
@@ -114,7 +115,7 @@ test("Effect API - organization data is parsed", async () => {
 
 test("Effect API - principal investigators are parsed", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(50).setOffset(0).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(50).setOffset(0).execute()).pipe(Effect.provide(testLayer))
   );
 
   const project = projects[0];
@@ -130,7 +131,7 @@ test("Effect API - principal investigators are parsed", async () => {
 
 test("Effect API - execute with builder pattern", async () => {
   const projects = await Effect.runPromise(
-    createQuery().setLimit(5).setOffset(0).execute().pipe(Effect.provide(testLayer))
+    Stream.runCollect(createQuery().setLimit(5).setOffset(0).execute()).pipe(Effect.provide(testLayer))
   );
 
   assert.strictEqual(projects.length, 5);

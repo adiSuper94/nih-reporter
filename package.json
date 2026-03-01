@@ -40,16 +40,15 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix"
   },
-  "dependencies": {
-    "@effect/platform": "^0.94.4",
-    "effect": "^3.19.16",
-    "zod": "^4.3.6"
-  },
   "devDependencies": {
-    "@effect/language-service": "^0.73.0",
+    "@effect/language-service": "^0.77.0",
     "@types/node": "^24.0.0",
     "oxfmt": "^0.28.0",
     "oxlint": "^1.43.0",
     "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "effect": "^4.0.0-beta.21",
+    "zod": "^4.3.6"
   }
 }
