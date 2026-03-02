@@ -4,6 +4,7 @@ import { ParseError, ApiError } from "./errors.js";
 import type { NihApiError } from "./errors.js";
 import { NihQueryBuilder } from "../query-builder.js";
 import { NIHProject, NIHProjectSchema, ProjectQueryBody } from "./schema.js";
+import { throttle, updateRateLimitState } from "./rate-limiter.js";
 
 type ProjectQueryBodyType = {
   criteria: {
@@ -59,6 +60,7 @@ class NIHProjectQuery extends NihQueryBuilder {
     };
 
     return Effect.gen(function* () {
+      yield* throttle();
       const client = yield* HttpClient.HttpClient;
       const request = HttpClientRequest.post("https://api.reporter.nih.gov/v2/projects/search", {
         body: HttpBody.jsonUnsafe(queryBody),
@@ -101,6 +103,7 @@ class NIHProjectQuery extends NihQueryBuilder {
             })
         )
       );
+      yield* updateRateLimitState(response.headers);
       if (data.results.length < queryBody.limit) {
         return new Page(data.results, Option.none());
       }
