@@ -11,11 +11,6 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": false,
     "erasableSyntaxOnly": true,
-    "noUncheckedIndexedAccess": true,
-    "plugins": [
-      {
-        "name": "@effect/language-service"
-      }
-    ]
+    "noUncheckedIndexedAccess": true
   }
 }
